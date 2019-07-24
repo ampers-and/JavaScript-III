@@ -22,14 +22,44 @@
 
 // code example for Window Binding
 
+function double(a)
+{
+    console.log(this);
+    return 2*a;
+}
+double(3);
+
 // Principle 2
 
 // code example for Implicit Binding
 
+const num = {
+    sentence: 'This squared is ',
+    square: function(n){
+        return this.sentence + n * n;
+    }
+}
+console.log(num.square(5));
+
 // Principle 3
 
 // code example for New Binding
+function Number(n)
+{
+    this.squared = n * n;
+    this.answer = `${n} squared is ${this.squared}`
+    this.speak = function(){
+        console.log(this.answer);
+    }
+}
+
+const seven = new Number (7);
+seven.speak();
 
 // Principle 4
 
 // code example for Explicit Binding
+
+const eight = new Number (8);
+eight.speak();
+eight.speak.call(seven);
