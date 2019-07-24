@@ -38,14 +38,14 @@ GameObject.prototype.destroy = function(){
   * should inherit destroy() from GameObject's prototype
 */
 
-function CharaacterStats(cS)
+function CharacterStats(c)
 {
-  GameObject.call(this, cS);
-  this.healthPoints = cS.healthPoints;
+  GameObject.call(this, c);
+  this.healthPoints = c.healthPoints;
 }
 
-CharaacterStats.prototype = Object.create(GameObject.prototype);
-CharaacterStats.prototype.takeDamage = function(){
+CharacterStats.prototype = Object.create(GameObject.prototype);
+CharacterStats.prototype.takeDamage = function(){
     return `${this.name} took damage.`;
   }
 
@@ -61,13 +61,13 @@ CharaacterStats.prototype.takeDamage = function(){
 
 function Humanoid(hum)
 {
-  CharaacterStats.call(this, hum);
+  CharacterStats.call(this, hum);
   this.team = hum.team;
   this.weapons = hum.weapons;
   this.language = hum.language;
 }
 
-Humanoid.prototype = Object.create(CharaacterStats.prototype);
+Humanoid.prototype = Object.create(CharacterStats.prototype);
 Humanoid.prototype.greet = function(){
   return `${this.name} offers a greeting in ${this.language}`;
 }
@@ -146,3 +146,58 @@ Humanoid.prototype.greet = function(){
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Villian(vil){
+    Humanoid.call(this, vil);
+    this.damage = vil.damage;
+  }
+
+  Villian.prototype = Object.create(Humanoid.prototype);
+
+  Villian.prototype.attack = function(obj){
+    obj.healthPoints -= this.damage;
+  }
+
+  function Hero (her){
+    Humanoid.call(this, her);
+    this.strength = her.strength;
+  }
+  
+  Hero.prototype = Object.create(Humanoid.prototype);
+  
+  Hero.prototype.defense = function(){
+    this.healthPoints += this.strength;
+  }
+  Hero.prototype.status = function(){
+    if (this.healthPoints > 0) {
+      console.log(`Health points = ${this.healthPoints}`);
+      }
+      else if(this.healthPoints <= 0){
+        console.log(`xx.Death.xx`);
+      }
+  }
+
+  const Hydra = new Villian({
+    name: "Hydra",
+    damage: 4,
+    language: "Greek",
+  })
+
+  const Hercules = new Hero({
+    name: "Hercules",
+    healthPoints: 10,
+    strength: 2,
+    language:"Greek",
+  })
+
+  console.log(Hercules.greet());
+  console.log(Hydra.greet());
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
+  Hercules.defense();
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
