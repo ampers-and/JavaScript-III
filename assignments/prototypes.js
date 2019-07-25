@@ -16,12 +16,38 @@
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
 
+function GameObject(g)
+{
+  this.createdAt = g.createdAt;
+  this.name = g.name;
+  this.dimensions = {
+    length: g.length,
+    width: g.width,
+    height: g.height,
+  };
+}
+
+GameObject.prototype.destroy = function(){
+    return `${this.name} was removed from the game.`;
+  }
+
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+
+function CharacterStats(c)
+{
+  GameObject.call(this, c);
+  this.healthPoints = c.healthPoints;
+}
+
+CharacterStats.prototype = Object.create(GameObject.prototype);
+CharacterStats.prototype.takeDamage = function(){
+    return `${this.name} took damage.`;
+  }
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -32,6 +58,19 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
+
+function Humanoid(hum)
+{
+  CharacterStats.call(this, hum);
+  this.team = hum.team;
+  this.weapons = hum.weapons;
+  this.language = hum.language;
+}
+
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+Humanoid.prototype.greet = function(){
+  return `${this.name} offers a greeting in ${this.language}`;
+}
  
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
@@ -41,7 +80,6 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +140,64 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Villian(vil){
+    Humanoid.call(this, vil);
+    this.damage = vil.damage;
+  }
+
+  Villian.prototype = Object.create(Humanoid.prototype);
+
+  Villian.prototype.attack = function(obj){
+    obj.healthPoints -= this.damage;
+  }
+
+  function Hero (her){
+    Humanoid.call(this, her);
+    this.strength = her.strength;
+  }
+  
+  Hero.prototype = Object.create(Humanoid.prototype);
+  
+  Hero.prototype.defense = function(){
+    this.healthPoints += this.strength;
+  }
+  Hero.prototype.status = function(){
+    if (this.healthPoints > 0) {
+      console.log(`Health points = ${this.healthPoints}`);
+      }
+      else if(this.healthPoints <= 0){
+        console.log(`xx.Death.xx`);
+      }
+  }
+
+  const Hydra = new Villian({
+    name: "Hydra",
+    damage: 4,
+    language: "Greek",
+  })
+
+  const Hercules = new Hero({
+    name: "Hercules",
+    healthPoints: 10,
+    strength: 2,
+    language:"Greek",
+  })
+
+  console.log(Hercules.greet());
+  console.log(Hydra.greet());
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
+  Hercules.defense();
+  Hercules.status();
+  Hydra.attack(Hercules);
+  Hercules.status();
